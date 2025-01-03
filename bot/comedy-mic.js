@@ -28,6 +28,8 @@ Current setting: You're hosting an open mic night at the Savage Comedy Club.`;
 
     // Start a comedy set
     async startSet(interaction) {
+        await interaction.deferReply();
+
         if (this.activePerformances.has(interaction.channelId)) {
             return interaction.reply("There's already someone bombing on stage. Wait your turn!");
         }
@@ -47,11 +49,15 @@ Current setting: You're hosting an open mic night at the Savage Comedy Club.`;
             new HumanMessage("Introduce the next comedian in a savage way")
         ]);
 
-        return interaction.reply(`🎤 ${response.content}`);
+        return interaction.editReply(`🎤 ${response.content}`);
+    
     }
 
     // Process a joke during the set
     async processJoke(interaction) {
+
+        await interaction.deferReply();
+
         const performance = this.activePerformances.get(interaction.channelId);
         if (!performance || performance.comedian !== interaction.user.id) {
             return interaction.reply("You're not the one on stage, heckle them instead!");
@@ -67,11 +73,13 @@ Current setting: You're hosting an open mic night at the Savage Comedy Club.`;
         ]);
 
         performance.heckles.push(response.content);
-        return interaction.reply(response.content);
+        return interaction.editReply(response.content);
     }
 
     // End the comedy set with feedback
     async endSet(interaction) {
+        await interaction.deferReply();
+
         const performance = this.activePerformances.get(interaction.channelId);
         if (!performance || performance.comedian !== interaction.user.id) {
             return interaction.reply("You can't end a set you never started!");
@@ -89,7 +97,7 @@ Current setting: You're hosting an open mic night at the Savage Comedy Club.`;
 
         this.activePerformances.delete(interaction.channelId);
         
-        return interaction.reply(`🎭 ${feedback.content}`);
+        return interaction.editReply(`🎭 ${feedback.content}`);
     }
 
     // Register slash commands
